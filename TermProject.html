@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+
+    </style>
+  </head>
+  <body>
+    <script>
+
+      function makeHTML(text) {
+        address = "https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query="+text;
+        window.open(address);
+      }
+
+    </script>
+
+    <input type="file" onchange="uploadFile()"/>
+    <img src="">
+    <script>
+      function uploadFile()  {
+
+        var upload = document.querySelector('img');
+        var file = document.querySelector('input[type=file]').files[0];
+        var reader = new FileReader();
+
+        reader.onloadend=function() {
+          upload.src = reader.result;
+        };
+
+        if(file)  {
+          reader.readAsDataURL(file);
+        } else {
+          upload.src = "";
+        }
+
+      }
+      uploadFile();
+    </script>
+    <img id = "celebimg" onclick="makeHTML('윤종신');"/>
+    <div id = "result">
+    <script>
+
+        function makeButton(text) {
+          btn = "/static/images/"+text+".jpg"
+          return btn;
+        }
+        document.getElementById('celebimg').src= makeButton('윤종신');
+
+        function showResult(celeb, percent) {
+          var result = "당신은 " + celeb + "과(와) " + percent +"% 닮았습니다."
+          return result;
+        }
+        document.getElementById('result').innerHTML = showResult('윤종신', 70);
+
+    </script>
+  </body>
+</html>
