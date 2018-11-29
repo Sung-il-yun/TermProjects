@@ -1,41 +1,46 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request
+from flask_uploads import UploadSet, configure_uploads, IMAGES
+from werkzeug import secure_filename
 import os
 from flask_cors import CORS
 from flask import jsonify
-from instagram.client import InstagramAPI
+from InstagramAPI import InstagramAPI
 import urllib.request
 
-app = Flask(__name__, template_folder='templates')
-app.secret_key = os.environ.get('SECERT_KEY')
+app = Flask(__name__)
 
-instagramConfig = {
-    'client_id':os.environ.get('CLIENT_ID'),
-    'client_secret':os.environ.get('CLIENT_SECRET'),
-    'redirect_uri':os.environ.get('REDIRECT_URI')
-}
-api = InstagramAPI(**instagramConfig)
+@app.route["upload_image", methods=["POST"]]
+def upload_image():
+    if request.method == 'POST':
+        if 'imfile' not in request.files:
+            print('NO FILE PART')
+            return redirect(request.url)
+        imfile = request.files['imfile']
+        if imfile.filename == '':
+            print('NO SELECTED FILE')
+            response = {"error":"true"}
+            return jsonify(response)
+        if imfile:
+            filepath = os.path.join("static",imfile.filename)
+            imfile.save(filepath)
 
-@app.route("/userPhoto")
-def userPhoto():
-    if instagram_access_token in session and 'instagram_user' in session:
-        userAPI = InstagramAPI(access_token=session['instagram_access_token'])
-        recent_media, next = userAPI.user_recent_media(user_id=session['instagram_user'].get('id'),count=25)
-        templateData = {
-            'size' : request.args.get('size','thumb'),
-            'media': recent_media
-        }
-        return render_template('display.html',**templateData)
-    else:
-        return redirect('/connect')
-@app.route('/connect')
-def main():
-    url = api.get_authorize_url(scope=["likes", "comments"])
-    return redirect(url)
-@app.route("/") #웹 브라우저에서 127.0.0.1:10000/, 즉 메인 페이지 접속 시 아래 함수를 실행한다.
-def index():
-    return render_template("TermProject.html")
+            response = {"error":"false", "upload_url":filepath}
+            return jsonify(response)
+
+        response={"error":"true"}
+        return jsonify(response)
 
 
+@app.route('/upload')
+def render_file():
+    return render_template('Termproject.html')
+
+@app.route('/fileUpload', methods=['GET','POST'])
+def upload():
+    if request.method == 'POST':
+        p = request.files['file']
+        p.save(secure_filename(p.filename))
+        return 'uploads 디렉토리 -> 파일 업로드 성공'
 
 
 if __name__ == '__main__':

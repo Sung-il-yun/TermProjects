@@ -10,7 +10,7 @@ attractionList = ['박수홍','George Clooney','Matt Damon','Sylvester Stallone'
                   'Jodie Foster', '한지민', 'Liu Yan', 'Léa Seydoux', '오나미', '신봉선', '신보라','김신영', '이국주', '조혜련', '이영자', '곽현화', '박보미', '홍현희', '강수지', '안지영',
                   '서현', '오연서', '태연', '송혜교', '신아영', '김태리', '소유', '벤', '정유미', '신세경']
 for keyword in attractionList:
-    google_crawler = GoogleImageCrawler(parser_threads=2, downloader_threads=4, storage={'root_dir': 'images/{}'.format(keyword)})
+    google_crawler = GoogleImageCrawler(parser_threads=1, downloader_threads=1, storage={'root_dir': 'images/{}'.format(keyword)})
     google_crawler.crawl(keyword=keyword, max_num=150, min_size=(500,500))
 
 
