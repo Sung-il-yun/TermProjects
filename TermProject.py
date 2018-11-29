@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request
+from flask import Flask, render_template,request,redirect
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from werkzeug import secure_filename
 import os
@@ -7,9 +7,14 @@ from flask import jsonify
 from InstagramAPI import InstagramAPI
 import urllib.request
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
+CORS(app)
 
-@app.route["upload_image", methods=["POST"]]
+@app.route("/final")
+def final():
+    return render_template("Final.html")
+
+@app.route("/upload_image", methods=["POST"])
 def upload_image():
     if request.method == 'POST':
         if 'imfile' not in request.files:
@@ -25,22 +30,14 @@ def upload_image():
             imfile.save(filepath)
 
             response = {"error":"false", "upload_url":filepath}
-            return jsonify(response)
+            return redirect("//127.0.0.1:10000/final")
 
-        response={"error":"true"}
+        response = {"error":"true"}
         return jsonify(response)
 
-
-@app.route('/upload')
-def render_file():
-    return render_template('Termproject.html')
-
-@app.route('/fileUpload', methods=['GET','POST'])
-def upload():
-    if request.method == 'POST':
-        p = request.files['file']
-        p.save(secure_filename(p.filename))
-        return 'uploads 디렉토리 -> 파일 업로드 성공'
+@app.route('/')
+def index():
+    return render_template("TermProject.html")
 
 
 if __name__ == '__main__':
