@@ -35,8 +35,15 @@ def upload_image():
 
         response = {"error": "true"}
         return jsonify(response)
+"""
+@app.route("/getName")
+def getName():
 
 
+
+@app.route("/getPercent")
+def getPercent():
+"""
 @app.route('/', methods=["GET", "POST"])
 def index():
     return render_template("TermProject.html")
