@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #holder {
+        width: 560px;
+        height: 560px;
+      }
+      td {
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <table style="width:100%; height:100%">
+      <td>
+        <form enctype="multipart/form-data" method="POST" id="upload_form">
+          <input type="file" accept="images/*" name="selfimg"/>
+          <div id= holder></div>
+          <button onclick="request();">UPLOAD</button>
+        </form>
+      </td>
+      <td>
+        <img id = "celebimg" onclick="makeHTML();" width = "704px" height="602px"/>
+      </td>
+    </table>
+    <br><br><br><br>
+    <div id = "result" style="text-align: center;"/>
+    <script>
+
+    function getName()  {
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200)  {
+          name = JSON.parse(this.responseText).name;
+
+        }
+      };
+      xmlhttp.open("GET", "http://127.0.0.1:10000/getData", true);
+      xmlhttp.send();
+      console.log(name);
+      return name;
+    }
+
+    function getPercent() {
+
+      var xmlhttp = new XMLHttpRequest();
+      var percent = 0;
+      xmlhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200)  {
+          percent = JSON.parse(this.responseText).percent;
+        }
+      };
+
+      xmlhttp.open("GET", "http://127.0.0.1:10000/getData",true);
+      xmlhttp.send();
+      return percent;
+    }
+
+    function request() {
+      var form = document.getElementById("upload_form");
+      var formData = new FormData(form);
+      var xmlhttp = new XMLHttpRequest();
+
+      xmlhttp.open("POST", "http://127.0.0.1:10000/upload_image", true);
+      xmlhttp.send(formData);
+    }
+    var upload = document.getElementsByTagName('input')[0],
+    holder = document.getElementById('holder');
+    upload.onchange= function(e)  {
+
+    var file = upload.files[0],
+    reader = new FileReader();
+    reader.onload = function(event) {
+    var img = new Image();
+    img.src = event.target.result;
+    img.width = 707;
+    img.height = 598;
+    holder.innerHTML = '';
+    holder.appendChild(img);
+
+      };
+
+      reader.readAsDataURL(file);
+      return false;
+
+    };
+      function makeHTML() {
+        address = "https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query="+getName();
+        window.open(address);
+      }
+      function makeButton() {
+        btn = "/static/images/"+getName()+".jpg"
+        return btn;
+      }
+      document.getElementById('celebimg').src= makeButton();
+
+      function showResult() {
+        var result = "당신은 " + getName() + "과(와) " + getPercent() +"% 닮았습니다."
+        return result;
+      }
+      document.getElementById('result').innerHTML = showResult();
+    </script>
+
+  </body>
+</html>
