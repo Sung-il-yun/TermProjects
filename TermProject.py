@@ -6,14 +6,19 @@ import os
 from flask_cors import CORS
 from flask import jsonify
 import vgg
-
+import json
 import urllib.request
 
 app = Flask(__name__, template_folder='templates')
 CORS(app)
 
+@app.route("/getData", methods=["GET"])
+def getData():
+    name, percent = vgg.test('static/selfimg')
+    data = {"name": name, "percent": percent}
+    return jsonify(data)
 
-@app.route("/upload_image", methods=["POST"])
+@app.route("/upload_image", methods=["GET","POST"])
 def upload_image():
     if request.method == 'POST':
         if 'selfimg' not in request.files:
@@ -28,22 +33,14 @@ def upload_image():
             filepath = os.path.join("static", selfimg.filename)
             selfimg.save(filepath)
             os.rename(filepath, 'static/selfimg')
-            name, percent = vgg.test('static/selfimg')
-            print(name, percent)
 
-            return name, percent
+            response = {"error": "false", "upload_url": filepath}
+            return jsonify(response)
 
         response = {"error": "true"}
         return jsonify(response)
-"""
-@app.route("/getName")
-def getName():
 
 
-
-@app.route("/getPercent")
-def getPercent():
-"""
 @app.route('/', methods=["GET", "POST"])
 def index():
     return render_template("TermProject.html")
